@@ -7,8 +7,8 @@
     <ProjectGuid>{3B05A9E7-8213-484D-87FB-3ADEFB033DAF}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>WebApiDemo</RootNamespace>
-    <AssemblyName>WebApiDemo</AssemblyName>
+    <RootNamespace>NotesWebApi</RootNamespace>
+    <AssemblyName>NotesWebApi</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>

@@ -15,17 +15,7 @@
 
         public static async Task<IEnumerable<CategoryItem>> GetAllCategories()
         {
-            var cacheItem = await CacheProvider.Get<IEnumerable<CategoryItem>>("categories");
-
-            if (cacheItem.HasValue)
-            {
-                return cacheItem.Value;
-            }
-
-            var categories = await HttpProxy.Get<CategoryItem[]>("api/categories");
-
-            await CacheProvider.Insert("categories", categories, 120);
-            return categories;
+            return await HttpProxy.Get<CategoryItem[]>("api/categories");
         }
     }
 }

@@ -1,27 +1,22 @@
-FROM microsoft/iis
+#Starting from Windows Server Core [1]
+FROM microsoft/windowsservercore
 
-# Install Chocolatey
-RUN @powershell -NoProfile -ExecutionPolicy unrestricted -Command "$env:chocolateyUseWindowsCompression = 'false'; (iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1')))"
+# Install IIS Web Server [2]
+RUN powershell -Command Add-WindowsFeature Web-Server
 
+# Remove existing websites (and port bindings as well)
+RUN powershell -Command "Get-WebSite | Remove-WebSite" && powershell -Command "Remove-Item C:\inetpub\wwwroot\iisstart.*"
 
-# Install build tools
-RUN powershell add-windowsfeature web-asp-net45 \
-    && choco install microsoft-build-tools -y --allow-empty-checksums -version 14.0.23107.10 \
-    && choco install dotnet4.6-targetpack --allow-empty-checksums -y \
-    && choco install nuget.commandline --allow-empty-checksums -y \
-    && nuget install MSBuild.Microsoft.VisualStudio.Web.targets -Version 14.0.0.3 \
-    && nuget install WebConfigTransformRunner -Version 1.0.0.1
-
-RUN powershell remove-item C:\inetpub\wwwroot\iisstart.*
+# hack for DNS cache bug
+# https://github.com/docker/docker/issues/27499
+RUN powershell -Command "set-itemproperty -path 'HKLM:\SYSTEM\CurrentControlSet\Services\Dnscache\Parameters' -Name ServerPriorityTimeLimit -Value 0 -Type DWord"
 
 # Copy files
-RUN md c:\build
-WORKDIR c:/build
-COPY . c:/build
+COPY ./out/ c:/inetpub/wwwroot
 
-# Restore packages, build, copy
-RUN nuget restore \
-    && "c:\Program Files (x86)\MSBuild\14.0\Bin\MSBuild.exe" /p:Platform="Any CPU" /p:VisualStudioVersion=12.0 /p:VSToolsPath=c:\MSBuild.Microsoft.VisualStudio.Web.targets.14.0.0.3\tools\VSToolsPath WebApp.sln \
-    && xcopy c:\build\WebApp\* c:\inetpub\wwwroot /s
+#  xcopy c:\build\WebApp\* c:\inetpub\wwwroot /s
+# Expose port to access web site
+EXPOSE 80
 
-ENTRYPOINT powershell 
+# Run blocking check
+ENTRYPOINT ["powershell", ".\\wait_until_w3svc_done.ps1"]

@@ -29,6 +29,7 @@ bld/
 # Visual Studo 2015 cache/options directory
 .vs/
 *.zip
+Out/
 
 # JetBrains Rider
 .idea/
