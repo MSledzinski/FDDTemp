@@ -5,7 +5,7 @@ FROM microsoft/windowsservercore
 RUN powershell -Command Add-WindowsFeature Web-Server
 
 # Remove existing websites (and port bindings as well)
-RUN powershell -Command "Get-WebSite | Remove-WebSite" && powershell -Command "Remove-Item C:\inetpub\wwwroot\iisstart.*"
+RUN powershell -Command "Remove-Item C:\inetpub\wwwroot\iisstart.*"
 
 # hack for DNS cache bug
 # https://github.com/docker/docker/issues/27499

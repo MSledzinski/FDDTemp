@@ -12,7 +12,7 @@ RUN powershell -Command "set-itemproperty -path 'HKLM:\SYSTEM\CurrentControlSet\
 RUN @powershell -NoProfile -ExecutionPolicy unrestricted -Command "$env:chocolateyUseWindowsCompression = 'false'; (iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1')))"
 
 # Remove existing websites (and port bindings as well)
-RUN powershell -Command "Get-WebSite | Remove-WebSite"
+RUN powershell -Command "Remove-Item c:/inetpub/wwwroot/iisstart.*"
 
 # Install build tools [3]
 RUN powershell add-windowsfeature web-asp-net45 \
